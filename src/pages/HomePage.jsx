@@ -1,25 +1,7 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import axios from "axios";
 
-function HomePage() {
-  const apiURL = "https://ih-countries-api.herokuapp.com/countries";
-
-  const [countries, setCountries] = useState([]);
-
-  useEffect(() => {
-    console.log("useEffect - Initial render (Mounting)");
-    axios
-      .get(apiURL)
-      .then((response) => {
-       // console.log(response.data);
-        setCountries(response.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-  }, []);
-
+function HomePage({ countries }) {
   return (
     <div
       className="container"
@@ -29,25 +11,34 @@ function HomePage() {
         WikiCountries: Your Guide to the World
       </h1>
 
-      <div className="list-group">
-        {countries.map((country) => {
-          return (
-            <Link
-              key={country._id}
-              className="list-group-item list-group-item-action"
-              to={{pathname: `/country/${country.alpha3Code.toLowerCase()}`, state: { country: country }}}
-            >
-
-              <img src={`https://flagpedia.net/data/flags/icon/72x54/${country.alpha2Code.toLowerCase()}.png`}></img>
-              
-              <p>{country.name.common}</p>
-              
-            </Link>
-          );
-        })}
+      <div className="list-group country-card-container">
+        <>
+          {countries.length ? (
+            <>
+              {countries.map((country) => {
+                return (
+                  <Link
+                    to={`/${country.alpha3Code}`}
+                    className="list-group-item list-group-item-action country-card-container"
+                  >
+                    <div className="country-card">
+                      <img
+                        src={`https://flagpedia.net/data/flags/icon/40x30/${country.alpha2Code.toLowerCase()}.png`}
+                        alt="country flag"
+                      />
+                      <span>{country.name.common}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </>
+          ) : (
+            <p>Loading...</p>
+          )}
+        </>
       </div>
     </div>
-  )
+  );
 }
 
 export default HomePage;
